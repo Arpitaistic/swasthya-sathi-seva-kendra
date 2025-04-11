@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Activity, 
@@ -15,15 +14,6 @@ import {
 import { motion } from 'framer-motion';
 import FeatureCard from '../common/FeatureCard';
 import { useNavigate } from 'react-router-dom';
-
-// Mock implementation of framer-motion for this example
-const motion = {
-  div: ({ children, ...props }: any) => (
-    <div {...props}>
-      {children}
-    </div>
-  )
-};
 
 const FeaturesSection = () => {
   const navigate = useNavigate();
