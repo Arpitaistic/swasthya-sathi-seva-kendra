@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { 
   Search, 
@@ -13,65 +12,22 @@ import {
   Loader
 } from 'lucide-react';
 import VoiceInputButton from '../common/VoiceInputButton';
-import { useToast } from '@/hooks/use-toast';
+import { useHealth } from '@/contexts/HealthContext';
 
 type Severity = 'low' | 'medium' | 'high' | null;
 
-interface HealthAdvice {
-  title: string;
-  description: string;
-  severity: Severity;
-  recommendations: string[];
-  seekMedicalHelp: boolean;
-  timeframe?: string;
-}
-
 const SymptomChecker = () => {
-  const [symptoms, setSymptoms] = useState('');
+  const { symptoms, setSymptoms, healthAdvice, analyzeSymptoms } = useHealth();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [advice, setAdvice] = useState<HealthAdvice | null>(null);
-  const { toast } = useToast();
   
   const handleVoiceInput = (text: string) => {
     setSymptoms(text);
-    toast({
-      title: "Voice input received",
-      description: text,
-    });
   };
   
-  const analyzeSymptoms = () => {
-    if (!symptoms.trim()) {
-      toast({
-        title: "Input required",
-        description: "Please describe your symptoms first",
-        variant: "destructive",
-      });
-      return;
-    }
-    
+  const handleAnalyzeSymptoms = () => {
     setIsAnalyzing(true);
-    
-    // Mock API call to analyze symptoms
-    setTimeout(() => {
-      // This is a mock response - in a real app, this would come from an AI model
-      const mockResponse: HealthAdvice = {
-        title: "Possible Flu or Common Cold",
-        description: "Your symptoms suggest you may have a viral infection like the flu or a common cold.",
-        severity: "medium",
-        recommendations: [
-          "Rest and stay hydrated",
-          "Take over-the-counter pain relievers for fever and aches",
-          "Monitor your temperature",
-          "Use a humidifier if available"
-        ],
-        seekMedicalHelp: true,
-        timeframe: "If symptoms persist beyond 3 days or worsen"
-      };
-      
-      setAdvice(mockResponse);
-      setIsAnalyzing(false);
-    }, 2000);
+    analyzeSymptoms();
+    setTimeout(() => setIsAnalyzing(false), 2000);
   };
   
   const getSeverityColor = (severity: Severity) => {
@@ -94,14 +50,13 @@ const SymptomChecker = () => {
   
   const resetChecker = () => {
     setSymptoms('');
-    setAdvice(null);
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 animate-fade-in">
       <h2 className="text-2xl font-semibold mb-4">Health Symptom Checker</h2>
       
-      {!advice ? (
+      {!healthAdvice ? (
         <>
           <p className="text-swasthya-text-light mb-6">
             Describe your symptoms in detail to get personalized health guidance.
@@ -126,7 +81,7 @@ const SymptomChecker = () => {
               <VoiceInputButton onVoiceInput={handleVoiceInput} className="flex-grow md:flex-grow-0" />
               
               <Button 
-                onClick={analyzeSymptoms} 
+                onClick={handleAnalyzeSymptoms} 
                 disabled={isAnalyzing}
                 className="btn-primary flex-grow md:flex-grow-0"
               >
@@ -158,11 +113,11 @@ const SymptomChecker = () => {
         </>
       ) : (
         <div className="space-y-6 animate-fade-in">
-          <div className={`p-4 rounded-lg ${getSeverityBg(advice.severity)}`}>
-            <h3 className={`text-xl font-semibold mb-2 ${getSeverityColor(advice.severity)}`}>
-              {advice.title}
+          <div className={`p-4 rounded-lg ${getSeverityBg(healthAdvice.severity)}`}>
+            <h3 className={`text-xl font-semibold mb-2 ${getSeverityColor(healthAdvice.severity)}`}>
+              {healthAdvice.title}
             </h3>
-            <p className="text-swasthya-text-light">{advice.description}</p>
+            <p className="text-swasthya-text-light">{healthAdvice.description}</p>
           </div>
           
           <div>
@@ -171,22 +126,22 @@ const SymptomChecker = () => {
               Recommendations
             </h4>
             <ul className="space-y-2 pl-7 list-disc">
-              {advice.recommendations.map((rec, index) => (
+              {healthAdvice.recommendations.map((rec, index) => (
                 <li key={index} className="text-swasthya-text-light">{rec}</li>
               ))}
             </ul>
           </div>
           
-          {advice.seekMedicalHelp && (
+          {healthAdvice.seekMedicalHelp && (
             <div className="p-4 bg-swasthya-primary/5 rounded-lg">
               <h4 className="font-semibold mb-1 flex items-center">
                 <AlertCircle className="h-5 w-5 text-swasthya-primary mr-2" />
                 Seek Medical Help
               </h4>
-              {advice.timeframe && (
+              {healthAdvice.timeframe && (
                 <p className="text-swasthya-text-light flex items-center">
                   <Clock className="h-4 w-4 text-swasthya-text-light mr-2" />
-                  {advice.timeframe}
+                  {healthAdvice.timeframe}
                 </p>
               )}
             </div>

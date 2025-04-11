@@ -13,72 +13,20 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-
-interface Scheme {
-  id: string;
-  title: string;
-  description: string;
-  category: 'health' | 'education' | 'housing' | 'agriculture' | 'employment';
-  eligibility: string[];
-  deadline: string | null;
-  status: 'eligible' | 'pending' | 'applied';
-  documentRequired: string[];
-}
+import { useWelfare } from '@/contexts/WelfareContext';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const SchemesList = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [schemes, setSchemes] = useState<Scheme[]>([
-    {
-      id: 'pm-kisan',
-      title: 'PM-KISAN',
-      description: 'Direct income support of ₹6,000 per year to farmer families',
-      category: 'agriculture',
-      eligibility: ['Small and marginal farmers', 'Family with landholding up to 2 hectares'],
-      deadline: '2023-12-31',
-      status: 'eligible',
-      documentRequired: ['Aadhaar Card', 'Land Records', 'Bank Account Details']
-    },
-    {
-      id: 'ayushman-bharat',
-      title: 'Ayushman Bharat',
-      description: 'Health insurance coverage of ₹5 lakh per family per year',
-      category: 'health',
-      eligibility: ['Low income families', 'Based on SECC database'],
-      deadline: null,
-      status: 'applied',
-      documentRequired: ['Aadhaar Card', 'Income Certificate', 'Family ID']
-    },
-    {
-      id: 'pmay-g',
-      title: 'Pradhan Mantri Awaas Yojana - Gramin',
-      description: 'Financial assistance for construction of pucca house',
-      category: 'housing',
-      eligibility: ['Rural homeless', 'Those living in kutcha/dilapidated houses'],
-      deadline: '2023-10-15',
-      status: 'pending',
-      documentRequired: ['Aadhaar Card', 'Land Documents', 'BPL Certificate']
-    },
-    {
-      id: 'sukanya-samriddhi',
-      title: 'Sukanya Samriddhi Yojana',
-      description: 'Savings scheme for girl child education and marriage expenses',
-      category: 'education',
-      eligibility: ['Girl child below 10 years'],
-      deadline: null,
-      status: 'eligible',
-      documentRequired: ['Girl\'s Birth Certificate', 'Guardian\'s ID Proof', 'Guardian\'s Address Proof']
-    },
-    {
-      id: 'pmkvy',
-      title: 'Pradhan Mantri Kaushal Vikas Yojana',
-      description: 'Skill development training and certification',
-      category: 'employment',
-      eligibility: ['Age between 15-45 years', 'Minimum education: Class 5'],
-      deadline: '2023-11-30',
-      status: 'eligible',
-      documentRequired: ['Aadhaar Card', 'Education Certificate', 'Bank Account Details']
-    }
-  ]);
+  const { schemes, applyForScheme, checkEligibility, searchSchemes, filterSchemesByCategory } = useWelfare();
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -110,11 +58,17 @@ const SchemesList = () => {
     }
   };
   
-  const filteredSchemes = schemes.filter(scheme => 
-    scheme.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    scheme.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    scheme.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+  
+  const handleCategoryFilter = (category: string | null) => {
+    setActiveCategory(category);
+  };
+  
+  const filteredSchemes = activeCategory 
+    ? filterSchemesByCategory(activeCategory)
+    : searchSchemes(searchQuery);
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 animate-fade-in">
@@ -126,15 +80,41 @@ const SchemesList = () => {
           <Input
             placeholder="Search schemes..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearch}
             className="pl-10"
           />
         </div>
         
-        <Button variant="outline" className="flex items-center">
-          <Filter className="h-5 w-5 mr-2" />
-          Filter Schemes
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="flex items-center">
+              <Filter className="h-5 w-5 mr-2" />
+              {activeCategory ? `Filter: ${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}` : 'Filter Schemes'}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>Categories</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => handleCategoryFilter(null)}>
+              All Schemes
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleCategoryFilter('health')}>
+              Health
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleCategoryFilter('education')}>
+              Education
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleCategoryFilter('housing')}>
+              Housing
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleCategoryFilter('agriculture')}>
+              Agriculture
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleCategoryFilter('employment')}>
+              Employment
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       <div className="space-y-6">
@@ -194,10 +174,10 @@ const SchemesList = () => {
                 
                 <div className="mt-4 flex justify-end">
                   {scheme.status === 'eligible' && (
-                    <Button className="btn-primary">Apply Now</Button>
+                    <Button className="btn-primary" onClick={() => applyForScheme(scheme.id)}>Apply Now</Button>
                   )}
                   {scheme.status === 'pending' && (
-                    <Button variant="outline">Check Eligibility</Button>
+                    <Button variant="outline" onClick={() => checkEligibility(scheme.id)}>Check Eligibility</Button>
                   )}
                   {scheme.status === 'applied' && (
                     <Button variant="outline">View Application Status</Button>
