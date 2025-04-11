@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Activity, 
@@ -81,33 +82,70 @@ const FeaturesSection = () => {
     }
   ];
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <section className="py-16 bg-white">
+    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Comprehensive Features</h2>
-          <p className="text-swasthya-text-light max-w-2xl mx-auto">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-swasthya-primary to-swasthya-accent">
+            Comprehensive Features
+          </h2>
+          <p className="text-swasthya-text-light max-w-2xl mx-auto text-lg">
             SwasthyaSaarthi combines health, emergency, and welfare services in one accessible platform
             designed specifically for rural communities.
           </p>
-        </div>
+        </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              className={`${index === 0 || index === 1 ? 'xl:col-span-2' : 'xl:col-span-1'} animate-fade-in`}
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className={`${index === 0 || index === 1 ? 'xl:col-span-2' : 'xl:col-span-1'}`}
+              variants={itemVariants}
             >
               <FeatureCard
                 icon={feature.icon}
                 title={feature.title}
                 description={feature.description}
                 onClick={() => navigate(feature.path)}
+                className={index % 2 === 0 ? "bg-gradient-to-br from-white to-swasthya-primary/5" : "bg-gradient-to-br from-white to-swasthya-accent/5"}
+                iconClassName={index % 2 === 0 ? "bg-swasthya-primary/10 text-swasthya-primary" : "bg-swasthya-accent/10 text-swasthya-accent"}
               />
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
