@@ -10,6 +10,7 @@ import {
   FileText, 
   ThumbsUp 
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const HowItWorksSection = () => {
   const steps = [
@@ -45,43 +46,98 @@ const HowItWorksSection = () => {
     }
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { 
+        type: "spring", 
+        stiffness: 100,
+        damping: 20
+      }
+    }
+  };
+
   return (
-    <section className="py-16 bg-swasthya-primary/5">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">How SwasthyaSaarthi Works</h2>
-          <p className="text-swasthya-text-light max-w-2xl mx-auto">
+    <section className="py-20 bg-swasthya-primary/5 dark:bg-swasthya-primary/10 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-0 w-64 h-64 bg-swasthya-primary/10 dark:bg-swasthya-primary/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-64 h-64 bg-swasthya-accent/10 dark:bg-swasthya-accent/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+      
+      <motion.div 
+        className="container mx-auto px-4 relative z-10"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.1 }}
+        variants={containerVariants}
+      >
+        <motion.div 
+          className="text-center mb-16"
+          variants={itemVariants}
+        >
+          <h2 className="text-3xl lg:text-4xl font-bold mb-4 gradient-text">How SwasthyaSaarthi Works</h2>
+          <p className="text-swasthya-text-light dark:text-gray-300 max-w-2xl mx-auto">
             Simple, powerful, and designed for everyone - even without constant internet access
           </p>
-        </div>
+        </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
-              <div 
+              <motion.div 
                 key={index}
-                className="bg-white p-6 rounded-lg shadow-md border border-gray-100 animate-fade-in" 
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="glass-card p-6 hover:shadow-lg transition-all duration-500 group"
+                variants={itemVariants}
+                whileHover={{ 
+                  y: -10,
+                  transition: { duration: 0.3 }
+                }}
               >
                 <div className="flex items-center mb-4">
-                  <div className="flex items-center justify-center h-10 w-10 rounded-full bg-swasthya-primary/10 text-swasthya-primary mr-4">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="text-xl font-semibold">{step.title}</h3>
+                  <motion.div 
+                    className="flex items-center justify-center h-12 w-12 rounded-full bg-swasthya-primary/20 dark:bg-swasthya-primary/30 text-swasthya-primary mr-4 group-hover:scale-110 transition-transform duration-300"
+                    whileHover={{ rotate: [0, -10, 10, -5, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Icon className="h-6 w-6" />
+                  </motion.div>
+                  <h3 className="text-xl font-semibold dark:text-white">{step.title}</h3>
                 </div>
-                <p className="text-swasthya-text-light">{step.description}</p>
-              </div>
+                <p className="text-swasthya-text-light dark:text-gray-300">{step.description}</p>
+              </motion.div>
             );
           })}
         </div>
         
-        <div className="text-center">
-          <Button asChild className="btn-primary">
-            <Link to="/health">Try the Health Assistant</Link>
+        <motion.div 
+          className="text-center"
+          variants={itemVariants}
+        >
+          <Button asChild className="btn-primary scale-105 shadow-lg shadow-swasthya-primary/20 dark:shadow-swasthya-primary/30">
+            <Link to="/health">
+              <motion.span
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Try the Health Assistant
+              </motion.span>
+            </Link>
           </Button>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 };

@@ -106,7 +106,7 @@ const FeaturesSection = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <section className="py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4">
         <motion.div 
           className="text-center mb-16"
@@ -114,10 +114,10 @@ const FeaturesSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-swasthya-primary to-swasthya-accent">
+          <h2 className="text-4xl font-bold mb-6 gradient-text">
             Comprehensive Features
           </h2>
-          <p className="text-swasthya-text-light max-w-2xl mx-auto text-lg">
+          <p className="text-swasthya-text-light dark:text-gray-300 max-w-2xl mx-auto text-lg">
             SwasthyaSaarthi combines health, emergency, and welfare services in one accessible platform
             designed specifically for rural communities.
           </p>
@@ -134,14 +134,24 @@ const FeaturesSection = () => {
               key={index}
               className={`${index === 0 || index === 1 ? 'xl:col-span-2' : 'xl:col-span-1'}`}
               variants={itemVariants}
+              whileHover={{ 
+                scale: 1.03, 
+                transition: { duration: 0.2 } 
+              }}
             >
               <FeatureCard
                 icon={feature.icon}
                 title={feature.title}
                 description={feature.description}
                 onClick={() => navigate(feature.path)}
-                className={index % 2 === 0 ? "bg-gradient-to-br from-white to-swasthya-primary/5" : "bg-gradient-to-br from-white to-swasthya-accent/5"}
-                iconClassName={index % 2 === 0 ? "bg-swasthya-primary/10 text-swasthya-primary" : "bg-swasthya-accent/10 text-swasthya-accent"}
+                className={index % 2 === 0 
+                  ? "bg-gradient-to-br from-white to-swasthya-primary/5 dark:from-gray-800 dark:to-swasthya-primary/15" 
+                  : "bg-gradient-to-br from-white to-swasthya-accent/5 dark:from-gray-800 dark:to-swasthya-accent/15"
+                }
+                iconClassName={index % 2 === 0 
+                  ? "bg-swasthya-primary/10 text-swasthya-primary dark:bg-swasthya-primary/20" 
+                  : "bg-swasthya-accent/10 text-swasthya-accent dark:bg-swasthya-accent/20"
+                }
               />
             </motion.div>
           ))}

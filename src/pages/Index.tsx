@@ -8,6 +8,7 @@ import HowItWorksSection from '../components/home/HowItWorksSection';
 import TestimonialsSection from '../components/home/TestimonialsSection';
 import DownloadSection from '../components/home/DownloadSection';
 import { motion, useScroll, useSpring } from 'framer-motion';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const Index = () => {
   const { scrollYProgress } = useScroll();
@@ -17,15 +18,17 @@ const Index = () => {
     restDelta: 0.001
   });
   
+  const { theme } = useTheme();
+  
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <motion.div 
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-swasthya-primary via-swasthya-secondary to-swasthya-accent z-50 origin-left"
+        className={`fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-swasthya-primary via-swasthya-secondary to-swasthya-accent z-50 origin-left`}
         style={{ scaleX }}
       />
       <Navbar />

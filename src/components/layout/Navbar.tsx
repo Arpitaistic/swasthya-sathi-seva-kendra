@@ -4,7 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Bell, User, HelpCircle, MicIcon, HomeIcon, HeartPulse, Shield, FileTextIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
-import { motion } from 'framer-motion';
+import ThemeToggle from '../common/ThemeToggle';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -37,12 +38,12 @@ const Navbar = () => {
       to={to} 
       className={`relative px-3 py-2 transition-all duration-300 ${isActive(to) 
         ? 'text-swasthya-primary font-medium' 
-        : 'text-gray-700 hover:text-swasthya-primary'}`}
+        : 'text-gray-700 hover:text-swasthya-primary dark:text-gray-300 dark:hover:text-swasthya-primary'}`}
     >
       <span className="relative z-10">{children}</span>
       {isActive(to) && (
         <motion.span 
-          className="absolute inset-0 bg-swasthya-primary/10 rounded-full -z-0"
+          className="absolute inset-0 bg-swasthya-primary/10 dark:bg-swasthya-primary/20 rounded-full -z-0"
           layoutId="navIndicator"
           transition={{ type: 'spring', duration: 0.5 }}
         />
@@ -50,22 +51,82 @@ const Navbar = () => {
     </Link>
   );
 
+  const navbarVariants = {
+    hidden: { y: -100, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { 
+        duration: 0.6, 
+        ease: [0.22, 1, 0.36, 1] 
+      }
+    }
+  };
+
+  const mobileMenuVariants = {
+    hidden: { opacity: 0, height: 0, overflow: 'hidden' },
+    visible: { 
+      opacity: 1, 
+      height: 'auto',
+      transition: { 
+        duration: 0.3,
+        staggerChildren: 0.1,
+        when: "beforeChildren"
+      }
+    },
+    exit: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        duration: 0.3,
+        when: "afterChildren",
+        staggerChildren: 0.05,
+        staggerDirection: -1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.3 } 
+    },
+    exit: { 
+      opacity: 0, 
+      x: -20,
+      transition: { duration: 0.2 } 
+    }
+  };
+
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      variants={navbarVariants}
+      initial="hidden"
+      animate="visible"
+      className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-md ${
         scrolled 
-          ? 'bg-white/90 backdrop-blur-md shadow-sm py-2' 
-          : 'bg-white py-3'
+          ? 'bg-white/90 dark:bg-gray-900/90 shadow-sm py-2' 
+          : 'bg-white dark:bg-gray-900 py-3'
       }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold bg-gradient-to-r from-swasthya-primary to-swasthya-accent bg-clip-text text-transparent animate-pulse-gentle">स्वास्थ्य</span>
-            <span className="text-xl font-semibold text-swasthya-text">साथी</span>
+            <motion.span 
+              className="text-2xl font-bold bg-gradient-to-r from-swasthya-primary to-swasthya-accent bg-clip-text text-transparent"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                repeatType: "reverse", 
+                ease: "easeInOut" 
+              }}
+            >
+              स्वास्थ्य
+            </motion.span>
+            <span className="text-xl font-semibold text-swasthya-text dark:text-white">साथी</span>
           </Link>
           
           {/* Desktop Navigation */}
@@ -107,23 +168,25 @@ const Navbar = () => {
               </NavigationMenuList>
             </NavigationMenu>
             
-            <div className="flex items-center space-x-2 ml-4">
+            <div className="flex items-center space-x-3 ml-4">
               <LanguageSwitcher />
               
+              <ThemeToggle />
+              
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="ghost" size="icon" className="rounded-full bg-swasthya-primary/10 text-swasthya-primary" aria-label="Voice command">
+                <Button variant="ghost" size="icon" className="rounded-full bg-swasthya-primary/10 text-swasthya-primary dark:bg-swasthya-primary/20" aria-label="Voice command">
                   <MicIcon className="h-4 w-4" />
                 </Button>
               </motion.div>
               
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="ghost" size="icon" className="rounded-full" aria-label="Notifications">
+                <Button variant="ghost" size="icon" className="rounded-full dark:text-gray-400" aria-label="Notifications">
                   <Bell className="h-4 w-4 text-swasthya-text-light" />
                 </Button>
               </motion.div>
               
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="ghost" size="icon" className="rounded-full" aria-label="Help">
+                <Button variant="ghost" size="icon" className="rounded-full dark:text-gray-400" aria-label="Help">
                   <HelpCircle className="h-4 w-4 text-swasthya-text-light" />
                 </Button>
               </motion.div>
@@ -131,8 +194,10 @@ const Navbar = () => {
           </div>
           
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-2">
-            <Button variant="ghost" size="icon" className="rounded-full bg-swasthya-primary/10 text-swasthya-primary" aria-label="Voice command">
+          <div className="md:hidden flex items-center space-x-3">
+            <ThemeToggle />
+            
+            <Button variant="ghost" size="icon" className="rounded-full bg-swasthya-primary/10 text-swasthya-primary dark:bg-swasthya-primary/20" aria-label="Voice command">
               <MicIcon className="h-5 w-5" />
             </Button>
             
@@ -141,77 +206,110 @@ const Navbar = () => {
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
-              className="rounded-full"
+              className="rounded-full dark:text-white"
             >
-              {isMenuOpen ? (
-                <X className="h-5 w-5 text-swasthya-text" />
-              ) : (
-                <Menu className="h-5 w-5 text-swasthya-text" />
-              )}
+              <AnimatePresence mode="wait" initial={false}>
+                {isMenuOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X className="h-5 w-5" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu className="h-5 w-5" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </Button>
           </div>
         </div>
       </div>
       
       {/* Mobile Menu */}
-      {isMenuOpen && (
-        <motion.div 
-          className="md:hidden bg-white border-t border-gray-100 py-4"
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="container mx-auto px-4 flex flex-col space-y-4">
-            <Link 
-              to="/health" 
-              className="flex items-center space-x-2 p-2 rounded-lg hover:bg-swasthya-primary/5"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <HeartPulse className="h-5 w-5 text-swasthya-primary" />
-              <span>Health Assistant</span>
-            </Link>
-            <Link 
-              to="/emergency" 
-              className="flex items-center space-x-2 p-2 rounded-lg hover:bg-swasthya-primary/5"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Shield className="h-5 w-5 text-swasthya-secondary" />
-              <span>Emergency</span>
-            </Link>
-            <Link 
-              to="/welfare" 
-              className="flex items-center space-x-2 p-2 rounded-lg hover:bg-swasthya-primary/5"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <FileTextIcon className="h-5 w-5 text-swasthya-accent" />
-              <span>Welfare Schemes</span>
-            </Link>
-            <Link 
-              to="/profile" 
-              className="flex items-center space-x-2 p-2 rounded-lg hover:bg-swasthya-primary/5"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <User className="h-5 w-5 text-swasthya-text" />
-              <span>Profile</span>
-            </Link>
-            
-            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-              <LanguageSwitcher />
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 py-4"
+            variants={mobileMenuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <div className="container mx-auto px-4 flex flex-col space-y-4">
+              <motion.div variants={itemVariants}>
+                <Link 
+                  to="/health" 
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-swasthya-primary/5 dark:hover:bg-swasthya-primary/10 text-swasthya-text dark:text-white"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <HeartPulse className="h-5 w-5 text-swasthya-primary" />
+                  <span>Health Assistant</span>
+                </Link>
+              </motion.div>
               
-              <div className="flex space-x-4">
-                <Button variant="ghost" size="icon" className="rounded-full" aria-label="Notifications">
-                  <Bell className="h-5 w-5 text-swasthya-text-light" />
-                </Button>
-                
-                <Button variant="ghost" size="icon" className="rounded-full" aria-label="Help">
-                  <HelpCircle className="h-5 w-5 text-swasthya-text-light" />
-                </Button>
-              </div>
+              <motion.div variants={itemVariants}>
+                <Link 
+                  to="/emergency" 
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-swasthya-primary/5 dark:hover:bg-swasthya-primary/10 text-swasthya-text dark:text-white"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Shield className="h-5 w-5 text-swasthya-secondary" />
+                  <span>Emergency</span>
+                </Link>
+              </motion.div>
+              
+              <motion.div variants={itemVariants}>
+                <Link 
+                  to="/welfare" 
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-swasthya-primary/5 dark:hover:bg-swasthya-primary/10 text-swasthya-text dark:text-white"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FileTextIcon className="h-5 w-5 text-swasthya-accent" />
+                  <span>Welfare Schemes</span>
+                </Link>
+              </motion.div>
+              
+              <motion.div variants={itemVariants}>
+                <Link 
+                  to="/profile" 
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-swasthya-primary/5 dark:hover:bg-swasthya-primary/10 text-swasthya-text dark:text-white"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <User className="h-5 w-5 text-swasthya-text dark:text-white" />
+                  <span>Profile</span>
+                </Link>
+              </motion.div>
+              
+              <motion.div variants={itemVariants}>
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+                  <LanguageSwitcher />
+                  
+                  <div className="flex space-x-4">
+                    <Button variant="ghost" size="icon" className="rounded-full dark:text-gray-400" aria-label="Notifications">
+                      <Bell className="h-5 w-5 text-swasthya-text-light" />
+                    </Button>
+                    
+                    <Button variant="ghost" size="icon" className="rounded-full dark:text-gray-400" aria-label="Help">
+                      <HelpCircle className="h-5 w-5 text-swasthya-text-light" />
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
   );
 };
