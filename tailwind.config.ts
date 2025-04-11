@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,20 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				swasthya: {
+					primary: "#38B2AC",
+					"primary-dark": "#2C7A7B",
+					secondary: "#F6AD55",
+					"secondary-dark": "#ED8936",
+					accent: "#4C51BF",
+					"accent-dark": "#434190",
+					background: "#F7FAFC",
+					success: "#48BB78",
+					warning: "#F6E05E",
+					danger: "#F56565",
+					text: "#2D3748",
+					"text-light": "#718096"
 				}
 			},
 			borderRadius: {
@@ -69,26 +84,55 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			keyframes: {
-				'accordion-down': {
-					from: {
-						height: '0'
+				"accordion-down": {
+					from: { height: "0" },
+					to: { height: "var(--radix-accordion-content-height)" },
+				},
+				"accordion-up": {
+					from: { height: "var(--radix-accordion-content-height)" },
+					to: { height: "0" },
+				},
+				"fade-in": {
+					"0%": { opacity: "0", transform: "translateY(10px)" },
+					"100%": { opacity: "1", transform: "translateY(0)" }
+				},
+				"pulse-gentle": {
+					"0%, 100%": {
+						opacity: "1",
+						transform: "scale(1)"
 					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
+					"50%": {
+						opacity: "0.85",
+						transform: "scale(0.98)" 
 					}
 				},
-				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+				"slide-in": {
+					"0%": { transform: "translateX(-100%)" },
+					"100%": { transform: "translateX(0)" }
+				},
+				"slide-right": {
+					"0%": { transform: "translateX(0)" },
+					"100%": { transform: "translateX(100%)" }
+				},
+				"wave": {
+					"0%": { transform: "rotate(0deg)" },
+					"10%": { transform: "rotate(14deg)" },
+					"20%": { transform: "rotate(-8deg)" },
+					"30%": { transform: "rotate(14deg)" },
+					"40%": { transform: "rotate(-4deg)" },
+					"50%": { transform: "rotate(10deg)" },
+					"60%": { transform: "rotate(0deg)" },
+					"100%": { transform: "rotate(0deg)" }
 				}
 			},
 			animation: {
-				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				"accordion-down": "accordion-down 0.2s ease-out",
+				"accordion-up": "accordion-up 0.2s ease-out",
+				"fade-in": "fade-in 0.5s ease-out forwards",
+				"pulse-gentle": "pulse-gentle 2s infinite",
+				"slide-in": "slide-in 0.5s ease-out forwards",
+				"slide-right": "slide-right 0.5s ease-out forwards",
+				"wave": "wave 2.5s ease-in-out infinite"
 			}
 		}
 	},
